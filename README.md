@@ -39,7 +39,49 @@ A necessidade de inicializar o Drupal na primeira execução é, porém, inconve
 
 Esta imagem é baseada na imagem "drupal" oficial, porém com algumas conveniências:
 
-* Drupal já inicializado (site e BD SQLite)
-* Drush
+* Drupal já inicializado (site "default" e BD SQLite)
+* Drush (linha de comando para automação de tarefas)
+
+### Uso em desenvolvimento
+
+Ao usar esta imagem para desenvolvimento Drupal o usuário deverá escolher um mountpoint adequado para a tarefa em mãos. Se seu trabalho for criar um tema, basta montar uma pasta de trabalho sobre "/var/www/html/themes":
+
+```
+docker run --name devdrupal \
+    -p 8000:80 \
+    -v $(pwd)/themes:/var/www/html/themes \
+    vertigo/drupal-devel
+```
+
+O mesmo vale se estiver desenvolvendo módulos ou perfis de instalação:
+
+```
+docker run --name devdrupal \
+    -p 8000:80 \
+    -v $(pwd)/themes:/var/www/html/themes \
+    -v $(pwd)/modules:/var/www/html/modules \
+    -v $(pwd)/profiles:/var/www/html/profiles \
+    vertigo/drupal-devel
+```
+
+### Dicas
+
+#### Exportando arquivos
+
+Para exportar arquivos de dentro de um container para o projeto (ex: para povoar um mountpoint com os arquivos originais que ele irá substituir) basta executar um container temporário com um volume conveniente. O exemplo abaixo exporta a pasta "themes" original da imagem para uma pasta "export" do projeto:
+
+```
+docker run --rm \
+    -v $(pwd)/export:/tmp/export \
+    vertigo/drupal-devel \
+        cp -R '/var/www/html/themes/*' /tmp/export/
+```
+
+Se ao contrário de um container descartável quisermos exportar arquivos de um container em execução então precisamos de um truque mais rebuscado. Para exportar a pasta "themes" de um container em execução chamado "mydrupal":
+
+```
+docker exec mydrupal \
+    tar -czO themes > themes.tar.gz
+```
 
 

@@ -15,5 +15,8 @@ RUN php -r "readfile('http://files.drush.org/drush.phar');" > drush && \
     echo "source /root/.drush/drush.bashrc" >> ~/.bashrc && \
     echo "source /root/.drush/drush.complete.sh" >> ~/.bashrc && \
     echo "source /root/.drush/drush.prompt.sh" >> ~/.bashrc
-RUN drush si standard --db-url=sqlite://sites/default/files/.ht.sqlite  --locale=pt-br -y && \
+RUN drush si standard --db-url=sqlite://sites/default/files/.ht.sqlite --account-pass=senha --locale=pt-br -y && \
     chown -R www-data:www-data /var/www/html/sites
+# themes, modules etc. will be
+# overriden by mount point
+RUN drush dl bootstrap
